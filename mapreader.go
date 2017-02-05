@@ -12,6 +12,7 @@ type mapReader struct {
 }
 
 type MapReader interface {
+	Fields() []string
 	Read() (map[string]string, error)
 	ReadAll() ([]map[string]string, error)
 }
@@ -32,6 +33,10 @@ func NewMapReader(fd io.Reader, fields []string, sep rune) *mapReader {
 		r: reader,
 		h: fields,
 	}
+}
+
+func (r *mapReader) Fields() []string {
+	return r.h
 }
 
 func (r *mapReader) Read() (map[string]string, error) {

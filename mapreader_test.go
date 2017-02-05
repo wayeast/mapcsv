@@ -21,6 +21,7 @@ func TestSetFields(t *testing.T) {
 }
 
 func TestSeparators(t *testing.T) {
+	var standard_fields = []string{"field1", "field2", "field3"}
 	var tests = []struct {
 		Csv string
 		Sep rune
@@ -32,6 +33,12 @@ func TestSeparators(t *testing.T) {
 	}
 	for _, test := range tests {
 		reader := NewMapReader(strings.NewReader(test.Csv), nil, test.Sep)
+		test_fields := reader.Fields()
+		for i, field := range standard_fields {
+			if test_fields[i] != field {
+				t.Error("Reader header incorrect:", test_fields)
+			}
+		}
 		rec, err := reader.Read()
 		if err != nil {
 			t.Error("Error reading csv", test.Csv)
