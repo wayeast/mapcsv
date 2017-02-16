@@ -7,20 +7,18 @@ import (
 )
 
 type mapReader struct {
-	r *csv.Reader
-	h []string
-}
-
-type MapReader interface {
-	Fields() []string
-	Read() (map[string]string, error)
-	ReadAll() ([]map[string]string, error)
+	csv.Reader
+	fields []string
 }
 
 func NewMapReader(fd io.Reader, fields []string, sep rune) *mapReader {
 	reader := csv.NewReader(fd)
+	if sep == 0 {
+		sep = ','
+	}
 	reader.Comma = sep
 
+	// If no fields passed to constructor, try to create them from first line of file
 	var err error
 	if fields == nil {
 		fields, err = reader.Read()
@@ -30,31 +28,31 @@ func NewMapReader(fd io.Reader, fields []string, sep rune) *mapReader {
 	}
 
 	return &mapReader{
-		r: reader,
-		h: fields,
+		*reader,
+		fields,
 	}
 }
 
 func (r *mapReader) Fields() []string {
-	return r.h
+	return r.fields
 }
 
-func (r *mapReader) Read() (map[string]string, error) {
-	record, err := r.r.Read()
+func (r *mapReader) AsMap() (map[string]string, error) {
+	record, err := r.Read()
 	if err != nil {
 		return nil, err
 	}
-	m := make(map[string]string)
-	for i, h := range r.h {
-		m[h] = record[i]
+	m := make(map[string]string, len(r.fields))
+	for i, f := range r.fields {
+		m[f] = record[i]
 	}
 
 	return m, nil
 }
 
-func (r *mapReader) ReadAll() (maps []map[string]string, err error) {
+func (r *mapReader) AsMaps() (maps []map[string]string, err error) {
 	for {
-		record, err := r.r.Read()
+		record, err := r.Read()
 		if err == io.EOF {
 			return maps, nil
 		}
@@ -62,9 +60,9 @@ func (r *mapReader) ReadAll() (maps []map[string]string, err error) {
 			return nil, err
 		}
 
-		m := make(map[string]string)
-		for i, h := range r.h {
-			m[h] = record[i]
+		m := make(map[string]string, len(r.fields))
+		for i, f := range r.fields {
+			m[f] = record[i]
 		}
 		maps = append(maps, m)
 	}
