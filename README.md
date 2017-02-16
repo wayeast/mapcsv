@@ -8,7 +8,7 @@ DictReader and DictWriter.
 >aaa,bbb,ccc
 
 ```go
-fd,_ := os.Open("/path/to/file.csv")
+fd, _ := os.Open("/path/to/file.csv")
 defer fd.Close()
 reader := mapcsv.NewMapReader(fd, nil, 0)
 fmt.Println(reader.Fields())   // ["field1", "field2", "field3"]
