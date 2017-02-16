@@ -3,29 +3,28 @@ DictReader and DictWriter.
 
 #### Example 1:
 
-> // file.csv:
-
+> // file.csv:<br>
 >field1,field2,field3<br>
 >aaa,bbb,ccc
 
-```
-fd,_ := os.Open("/path/to/file.csv")<br>
-defer fd.Close()<br><br>
-reader := mapcsv.NewMapReader(fd, nil, 0)<br>
-fmt.Println(reader.Fields())&nbsp;&nbsp;&nbsp;*// ["field1", "field2", "field3"]*<br>
-record, _ := reader.AsMap()&nbsp;&nbsp;&nbsp;*// map[string]string {"field1": "aaa", "field2": "bbb", "field3": "ccc"}*<br><br>
+```go
+fd,_ := os.Open("/path/to/file.csv")
+defer fd.Close()
+reader := mapcsv.NewMapReader(fd, nil, 0)
+fmt.Println(reader.Fields())   // ["field1", "field2", "field3"]
+record, _ := reader.AsMap()   // map[string]string {"field1": "aaa", "field2": "bbb", "field3": "ccc"}
 ```
 
 
 #### Example 2:
 
-```
-fd, _ := os.OpenFile("/path/to/file.csv", os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0644)<br>
-defer fd.Close()<br><br>
-var fields = []string{"field1", "field2", "field3"}<br>
-w := mapcsv.NewMapWriter(fd, fields, 0)<br>
-w.WriteHeader()<br><br>
-var row = map[string]string{"field1": "aaa", "field2": "bbb", "field3": "ccc"}<br>
-w.WriteRow(row)<br>
-w.Flush()<br>
+```go
+fd, _ := os.OpenFile("/path/to/file.csv", os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0644)
+defer fd.Close()
+var fields = []string{"field1", "field2", "field3"}
+w := mapcsv.NewMapWriter(fd, fields, 0)
+w.WriteHeader()
+var row = map[string]string{"field1": "aaa", "field2": "bbb", "field3": "ccc"}
+w.WriteRow(row)
+w.Flush()
 ```
